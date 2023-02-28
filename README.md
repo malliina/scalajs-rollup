@@ -1,3 +1,7 @@
 # scalajs-rollup
 
-This is an empty scala project template.
+Install [rollup.js](https://www.rollupjs.org/).
+
+    sbt ~build
+
+Navigate to http://localhost:10101.
