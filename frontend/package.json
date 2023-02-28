@@ -13,6 +13,6 @@
     "date-fns": "^2.29.3"
   },
   "scripts": {
-    "build": "rollup --config rollup.config.js && rollup --config assets.rollup.config.js"
+    "build": "rollup --config rollup.config.js"
   }
 }

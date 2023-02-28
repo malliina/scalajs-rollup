@@ -125,6 +125,7 @@ object RollupPlugin extends AutoPlugin {
     val content = s"""
       |// Generated at build time
       |export const production = $isProdStr
+      |export const outputDir = "$outputDir"
       |export const scalajs = {
       |  input: { frontend: "$input" },
       |  output: {
