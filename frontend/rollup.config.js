@@ -7,7 +7,8 @@ import url from "postcss-url"
 
 const assetOptions = [
     // maxSize is kilobytes
-    { filter: "**/*.png", url: "inline", maxSize: 48, fallback: "copy", assetsPath: "img", useHash: true }
+    { filter: "**/*.png", url: "inline", maxSize: 48, fallback: "copy", assetsPath: "img", useHash: true, hashOptions: {append: true} },
+    { filter: "**/copy/*.png", url: "copy", assetsPath: "img", useHash: true, hashOptions: { append: true} }
 ]
 
 const config = {
