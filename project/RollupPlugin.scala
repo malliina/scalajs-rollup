@@ -5,6 +5,7 @@ import org.apache.ivy.util.ChecksumHelper
 import org.scalajs.sbtplugin.ScalaJSPlugin
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport.{ModuleKind, fastLinkJS, fastLinkJSOutput, fullLinkJS, fullLinkJSOutput, scalaJSLinkerConfig, scalaJSStage}
 import org.scalajs.sbtplugin.Stage
+import sbt.Def.spaceDelimited
 import sbt.nio.Keys.fileInputs
 
 import java.nio.charset.StandardCharsets
@@ -22,6 +23,7 @@ object RollupPlugin extends AutoPlugin {
     val build = BuildKeys.build
     val prepareRollup = taskKey[File]("Prepares rollup")
     val outputDir = settingKey[File]("Output dir for bundled assets")
+    val front = inputKey[Int]("Runs the input as a command in the frontend working directory")
   }
   import autoImport._
 
@@ -39,7 +41,14 @@ object RollupPlugin extends AutoPlugin {
             }
             stageTask / build
           }
-        }.value
+        }.value,
+        front := {
+          val log = streams.value.log
+          val args: Seq[String] = spaceDelimited("<arg>").parsed
+          val stringified = args.mkString(" ")
+          val cwd = baseDirectory.value
+          process(args, cwd, log)
+        }
       )
 
   private def stageSettings(stage: Stage): Seq[Def.Setting[?]] = {
@@ -60,6 +69,7 @@ object RollupPlugin extends AutoPlugin {
         val mainJs = jsDir.relativeTo(baseDirectory.value).get / "main.js"
         log.info(s"Built $mainJs with prod $isProd.")
         val rollup = target.value / "scalajs.rollup.config.js"
+        outputDir.value.delete()
         makeRollupConfig(mainJs, outputDir.value, rollup, isProd, log)
         jsDir
       },

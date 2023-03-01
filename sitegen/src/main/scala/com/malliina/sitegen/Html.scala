@@ -20,12 +20,12 @@ class Html(liveReload: Boolean):
       ),
       link(rel := "shortcut icon", `type` := "image/png", href := asset("img/jag-16x16.png")),
       titleTag("Scala.js generated site"),
-      Seq("frontend.css", "fonts.css").map { file =>
+      Seq("styles.css", "fonts.css").map { file =>
         link(rel := "stylesheet", href := asset(file))
       }
     ),
     body(`class` := "app")(
-      p("The time is now ", span(id := "time-now")("...")),
+      p("The time is ", span(id := "time-now")("...")),
       script(`type` := "text/javascript", src := asset("frontend.js")),
       if liveReload then script(`type` := "text/javascript", src := LiveReload.script)
       else modifier()

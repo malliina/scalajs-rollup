@@ -1,7 +1,7 @@
 import resolve from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
 import terser from "@rollup/plugin-terser"
-import {scalajs, production, outputDir} from "./target/scalajs.rollup.config"
+import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
 import postcss from "rollup-plugin-postcss"
 import cssUrl from "postcss-url"
 import url from "@rollup/plugin-url"
@@ -44,8 +44,7 @@ const config = [
             format: "iife",
             name: "version",
             entryFileNames: entryNames
-        },
-        context: "window" // silences nonsense rollup build time error message
+        }
     },
     {
         input: {
@@ -59,16 +58,37 @@ const config = [
             postcss({
                 extract: true,
                 minimize: production,
-                plugins: [cssUrl(cssOptions)]
+                plugins: [cssUrl(cssOptions)],
+                to: scalajs.output.dir + "/unused.css"
             }),
             production && terser()
         ],
         output: {
             dir: outputDir,
-            format: "iife",
             entryFileNames: entryNames
+        }
+    },
+    {
+        input: {
+            styles: "src/main/resources/styles.js"
         },
-        context: "window"
+        plugins: [
+            url({
+                limit: 0,
+                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
+            }),
+            postcss({
+                extract: true,
+                minimize: production,
+                plugins: [cssUrl(cssOptions)],
+                to: scalajs.output.dir + "/unused.css"
+            }),
+            production && terser()
+        ],
+        output: {
+            dir: outputDir,
+            entryFileNames: entryNames
+        }
     }
 ]
 
