@@ -1,10 +1,10 @@
 import resolve from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
 import terser from "@rollup/plugin-terser"
-import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
-import postcss from "rollup-plugin-postcss"
-import cssUrl from "postcss-url"
 import url from "@rollup/plugin-url"
+import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
+import rollupPostcss from "./rollupPostcss"
+import path from "path"
 
 const cssOptions = [
     {
@@ -25,16 +25,34 @@ const cssOptions = [
 
 const entryNames = production ? "[name].[hash].js" : "[name].js"
 
+const cssPlugin = (out) => rollupPostcss({
+    to: path.resolve(outputDir, out),
+    production: production
+}, cssOptions)
+
+const cssConfig = (inputConfig, out) => {
+    return {
+        input: inputConfig,
+        plugins: [
+            url({
+                limit: 0,
+                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
+            }),
+            cssPlugin(out),
+            production && terser()
+        ],
+        output: {
+            dir: outputDir,
+            entryFileNames: entryNames
+        }
+    }
+}
+
 const config = [
     {
         input: scalajs.input,
         plugins: [
-            postcss({
-                extract: true,
-                minimize: production,
-                plugins: [cssUrl(cssOptions)],
-                to: scalajs.output.dir + "/unused.css" // last path part is unused
-            }),
+            cssPlugin("frontend.css"),
             resolve(), // tells Rollup how to find date-fns in node_modules
             commonjs(), // converts date-fns to ES modules
             production && terser() // minify, but only in production
@@ -46,50 +64,8 @@ const config = [
             entryFileNames: entryNames
         }
     },
-    {
-        input: {
-            fonts: "src/main/resources/assets.js"
-        },
-        plugins: [
-            url({
-                limit: 0,
-                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
-            }),
-            postcss({
-                extract: true,
-                minimize: production,
-                plugins: [cssUrl(cssOptions)],
-                to: scalajs.output.dir + "/unused.css"
-            }),
-            production && terser()
-        ],
-        output: {
-            dir: outputDir,
-            entryFileNames: entryNames
-        }
-    },
-    {
-        input: {
-            styles: "src/main/resources/styles.js"
-        },
-        plugins: [
-            url({
-                limit: 0,
-                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
-            }),
-            postcss({
-                extract: true,
-                minimize: production,
-                plugins: [cssUrl(cssOptions)],
-                to: scalajs.output.dir + "/unused.css"
-            }),
-            production && terser()
-        ],
-        output: {
-            dir: outputDir,
-            entryFileNames: entryNames
-        }
-    }
+    cssConfig({fonts: "src/main/resources/assets.js"}, "fonts.css"),
+    cssConfig({styles: "src/main/resources/styles.js"}, "styles.css")
 ]
 
 export default config

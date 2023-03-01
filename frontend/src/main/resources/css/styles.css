@@ -9,3 +9,12 @@
 .app {
     background: url("../img/beauty.png");
 }
+
+::placeholder {
+    color: gray;
+}
+
+.what {
+    transition: all .5s;
+    user-select: none;
+}

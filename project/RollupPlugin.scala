@@ -75,7 +75,7 @@ object RollupPlugin extends AutoPlugin {
       stageTask / build / fileInputs ++=
         (Compile / sourceDirectories).value.map(f => f.toGlob / ** / "*.scala") ++
           (Compile / resourceDirectories).value.map(f => f.toGlob / ** / *) ++
-          Seq(baseDirectory.value.toGlob / "*.config.js") ++
+          Seq(baseDirectory.value.toGlob / "*.js") ++
           Seq(baseDirectory.value / "package.json").map(_.toGlob),
       stageTask / build := {
         val log = streams.value.log
