@@ -69,7 +69,6 @@ object RollupPlugin extends AutoPlugin {
         val mainJs = jsDir.relativeTo(baseDirectory.value).get / "main.js"
         log.info(s"Built $mainJs with prod $isProd.")
         val rollup = target.value / "scalajs.rollup.config.js"
-        outputDir.value.delete()
         makeRollupConfig(mainJs, outputDir.value, rollup, isProd, log)
         jsDir
       },
