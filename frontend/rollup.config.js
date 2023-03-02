@@ -25,34 +25,16 @@ const cssOptions = [
 
 const entryNames = production ? "[name].[hash].js" : "[name].js"
 
-const cssPlugin = (out) => rollupPostcss({
-    to: path.resolve(outputDir, out),
+const cssPlugin = () => rollupPostcss({
+    outDir: outputDir,
     production: production
 }, cssOptions)
-
-const cssConfig = (inputConfig, out) => {
-    return {
-        input: inputConfig,
-        plugins: [
-            url({
-                limit: 0,
-                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
-            }),
-            cssPlugin(out),
-            production && terser()
-        ],
-        output: {
-            dir: outputDir,
-            entryFileNames: entryNames
-        }
-    }
-}
 
 const config = [
     {
         input: scalajs.input,
         plugins: [
-            cssPlugin("frontend.css"),
+            cssPlugin(),
             resolve(), // tells Rollup how to find date-fns in node_modules
             commonjs(), // converts date-fns to ES modules
             production && terser() // minify, but only in production
@@ -64,8 +46,24 @@ const config = [
             entryFileNames: entryNames
         }
     },
-    cssConfig({fonts: "src/main/resources/assets.js"}, "fonts.css"),
-    cssConfig({styles: "src/main/resources/styles.js"}, "styles.css")
+    {
+        input: {
+            fonts: "src/main/resources/assets.js",
+            styles: "src/main/resources/styles.js"
+        },
+        plugins: [
+            url({
+                limit: 0,
+                fileName: production ? "[dirname][name].[hash][extname]" : "[dirname][name][extname]"
+            }),
+            cssPlugin(),
+            production && terser()
+        ],
+        output: {
+            dir: outputDir,
+            entryFileNames: entryNames
+        }
+    }
 ]
 
 export default config
