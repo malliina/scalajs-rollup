@@ -4,6 +4,7 @@ import cssnanoPlugin from "cssnano"
 import path from "path"
 import postcss from "postcss"
 import postcssUrl from "postcss-url"
+import postcssNesting from "postcss-nesting"
 
 // Inspiration from https://github.com/egoist/rollup-plugin-postcss/blob/master/src/index.js
 
@@ -16,7 +17,7 @@ function importOrder(id, getInfo) {
 export default function rollupPostcss(options = {}, urlOptions = {}) {
     const filter = createFilter(options.include || "**/*.css", options.exclude)
     const isProd = options.production === true
-    const basicPlugins = [autoprefixer, postcssUrl(urlOptions)]
+    const basicPlugins = [postcssNesting(), autoprefixer, postcssUrl(urlOptions)]
     const extraPlugins = isProd ? [cssnanoPlugin()] : []
     const plugins = basicPlugins.concat(extraPlugins)
     const processed = new Map()
@@ -49,12 +50,13 @@ export default function rollupPostcss(options = {}, urlOptions = {}) {
                 const contents = orderedIds.map(id => processed.get(id))
                 const content = "".concat(...contents)
                 const name = path.parse(entry).name
-                console.log(`Writing bundle for ${entry}, files are ${orderedIds}`)
-                this.emitFile({
+                // console.log(`Writing bundle for ${entry}, files are ${orderedIds}`)
+                const ref = this.emitFile({
                     fileName: `${name}.css`,
                     type: "asset",
                     source: content
                 })
+                console.log(`Bundled ${this.getFileName(ref)}.`)
             })
         }
     }

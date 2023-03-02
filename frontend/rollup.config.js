@@ -4,7 +4,6 @@ import terser from "@rollup/plugin-terser"
 import url from "@rollup/plugin-url"
 import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
 import rollupPostcss from "./rollupPostcss"
-import path from "path"
 
 const cssOptions = [
     {

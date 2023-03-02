@@ -4,8 +4,7 @@ import buildinfo.BuildInfo
 import com.malliina.live.LiveReload
 import scalatags.Text.all.*
 
-import java.nio.file.Path
-import java.nio.file.Files
+import java.nio.file.{Files, NoSuchFileException, Path}
 import scala.jdk.CollectionConverters.IteratorHasAsScala
 
 class Html(liveReload: Boolean):
@@ -26,6 +25,7 @@ class Html(liveReload: Boolean):
     ),
     body(`class` := "app")(
       p("The time is ", span(id := "time-now")("...")),
+      div(`class` := "box"),
       script(`type` := "text/javascript", src := asset("frontend.js")),
       if liveReload then script(`type` := "text/javascript", src := LiveReload.script)
       else modifier()
@@ -54,4 +54,4 @@ class Html(liveReload: Boolean):
 
   def relative(p: Path) = dist.relativize(p).toString.replace('\\', '/')
 
-  def fileNotFound(file: String) = throw Exception(s"File not found: '$file'.")
+  def fileNotFound(file: String) = throw NoSuchFileException(s"File not found: '$file'.")

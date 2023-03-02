@@ -6,12 +6,16 @@
     font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
+:root {
+    --app-color: magenta;
+}
+
 .app {
     background: url("../img/beauty.png");
 }
 
 ::placeholder {
-    color: gray;
+    color: var(--app-color);
 }
 
 .what {
