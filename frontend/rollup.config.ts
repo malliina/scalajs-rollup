@@ -51,7 +51,7 @@ const config: RollupOptions[] = [
   },
   {
     input: {
-      fonts: path.resolve(resourcesDir, "assets.js"),
+      fonts: path.resolve(resourcesDir, "fonts.js"),
       styles: path.resolve(resourcesDir, "styles.js")
     },
     plugins: [
