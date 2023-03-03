@@ -22,8 +22,6 @@ val frontend = project
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "2.4.0"
     ),
-    // Helps IntelliJ
-    Compile / resourceDirectories ++= Seq(baseDirectory.value),
     scalaJSUseMainModuleInitializer := true
   )
 

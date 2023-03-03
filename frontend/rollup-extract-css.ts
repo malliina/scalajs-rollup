@@ -1,6 +1,7 @@
+import type {EmittedAsset, Plugin} from "rollup"
 import {createFilter} from "@rollup/pluginutils"
 import autoprefixer from "autoprefixer"
-import cssnanoPlugin from "cssnano"
+import cssnano from "cssnano"
 import path from "path"
 import postcss from "postcss"
 import postcssUrl from "postcss-url"
@@ -14,15 +15,23 @@ function importOrder(id, getInfo) {
   }).filter((v, idx, arr) => arr.indexOf(v) === idx)
 }
 
-export default function rollupPostcss(options = {}, urlOptions = {}) {
+export interface ExtractOptions {
+  outDir: string
+  include?: string
+  exclude?: string
+  minimize?: boolean
+  urlOptions: any
+}
+
+export default function extractcss(options: ExtractOptions): Plugin {
   const filter = createFilter(options.include || "**/*.css", options.exclude)
   const minimize = options.minimize || false
-  const basicPlugins = [postcssNesting(), autoprefixer, postcssUrl(urlOptions)]
-  const extraPlugins = minimize ? [cssnanoPlugin()] : []
+  const basicPlugins = [postcssNesting(), autoprefixer, postcssUrl(options.urlOptions)]
+  const extraPlugins = minimize ? [cssnano()] : []
   const plugins = basicPlugins.concat(extraPlugins)
-  const processed = new Map()
+  const processed = new Map<string, string>()
   return {
-    name: "rollup-plugin-extract-postcss",
+    name: "rollup-plugin-extract-css",
     async transform(code, id) {
       if (!filter(id)) return
       const result = await postcss(plugins)
@@ -43,20 +52,21 @@ export default function rollupPostcss(options = {}, urlOptions = {}) {
     },
     async generateBundle(opts, bundle) {
       if (processed.size === 0) return
-      const entries = Object.keys(bundle).filter(fileName => bundle[fileName].isEntry)
-      entries.forEach(entry => {
-        const facade = bundle[entry].facadeModuleId
-        const orderedIds = importOrder(facade, this.getModuleInfo)
-        const contents = orderedIds.map(id => processed.get(id))
-        const content = "".concat(...contents)
-        const name = path.parse(entry).name
-        // console.log(`Writing bundle for ${entry}, files are ${orderedIds}`)
-        const ref = this.emitFile({
-          fileName: `${name}.css`,
-          type: "asset",
-          source: content
-        })
-        console.log(`Created ${this.getFileName(ref)}.`)
+      Object.keys(bundle).forEach(entry => {
+        const b = bundle[entry]
+        if (b.type == "chunk" && b.isEntry) {
+          const facade = b.facadeModuleId
+          const orderedIds = importOrder(facade, this.getModuleInfo)
+          const contents = orderedIds.map(id => processed.get(id))
+          const content = "".concat(...contents)
+          const name = path.parse(entry).name
+          const ref = this.emitFile({
+            fileName: `${name}.css`,
+            type: "asset",
+            source: content
+          })
+          console.log(`Created ${this.getFileName(ref)}.`)
+        }
       })
     }
   }
