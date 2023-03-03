@@ -14,4 +14,10 @@ jobs:
           distribution: 'zulu'
           java-version: '11'
       - name: Run tests
-        run: sbt +test "set scalaJSStage in Global := FullOptStage" build
+        run: sbt +test
+      - uses: actions/checkout@master
+      - name: Deploy site
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: sbt "set scalaJSStage in Global := FullOptStage" deploy

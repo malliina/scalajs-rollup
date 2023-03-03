@@ -22,12 +22,14 @@ val frontend = project
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom" % "2.4.0"
     ),
+    // Helps IntelliJ
+    Compile / resourceDirectories ++= Seq(baseDirectory.value),
     scalaJSUseMainModuleInitializer := true
   )
 
 val sitegen = project
   .in(file("sitegen"))
-  .enablePlugins(SiteGenPlugin)
+  .enablePlugins(SiteGenPlugin, NetlifyPlugin)
   .settings(
     frontendProject := frontend
   )

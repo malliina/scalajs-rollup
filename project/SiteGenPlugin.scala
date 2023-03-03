@@ -1,4 +1,4 @@
-import BuildKeys.build
+import BuildKeys.{build, isProd}
 import RollupPlugin.autoImport.outputDir
 import SiteGenPlugin.autoImport.frontendProject
 import com.malliina.live.LiveReloadPlugin
@@ -17,6 +17,7 @@ object SiteGenPlugin extends AutoPlugin {
   }
 
   override def projectSettings: Seq[Setting[?]] = Seq(
+    isProd := ((Global / scalaJSStage).value == FullOptStage),
     build := (Compile / run).toTask(" ").value,
     build := build.dependsOn {
       Def.task {
@@ -30,7 +31,7 @@ object SiteGenPlugin extends AutoPlugin {
     }.value.toPath,
     buildInfoKeys ++= Seq(
       "dist" -> liveReloadRoot.value.toFile,
-      "isProd" -> ((Global / scalaJSStage).value == FullOptStage)
+      "isProd" -> isProd.value
     )
   )
 }

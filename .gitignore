@@ -11,3 +11,5 @@ out
 .bsp
 .metals
 node_modules/
+# Local Netlify folder
+.netlify

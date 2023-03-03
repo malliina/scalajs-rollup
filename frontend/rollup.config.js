@@ -3,8 +3,10 @@ import commonjs from "@rollup/plugin-commonjs"
 import terser from "@rollup/plugin-terser"
 import url from "@rollup/plugin-url"
 import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
+import path from "path"
 import rollupPostcss from "./rollupPostcss"
 
+const resourcesDir = "src/main/resources"
 const cssOptions = [
     {
         filter: "**/*.woff2",
@@ -16,7 +18,7 @@ const cssOptions = [
         url: "inline",
         maxSize: 48,
         fallback: "copy",
-        assetsPath: "img",
+        assetsPath: "assets", // this must be defined but can be whatever since it "cancels out" the "../" in the source files
         useHash: production,
         hashOptions: {append: true}
     }
@@ -26,7 +28,7 @@ const entryNames = production ? "[name].[hash].js" : "[name].js"
 
 const cssPlugin = () => rollupPostcss({
     outDir: outputDir,
-    production: production
+    minimize: production
 }, cssOptions)
 
 const config = [
@@ -47,8 +49,8 @@ const config = [
     },
     {
         input: {
-            fonts: "src/main/resources/assets.js",
-            styles: "src/main/resources/styles.js"
+            fonts: path.resolve(resourcesDir, "assets.js"),
+            styles: path.resolve(resourcesDir, "styles.js")
         },
         plugins: [
             url({

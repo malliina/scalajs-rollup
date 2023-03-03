@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets
 
 object BuildKeys {
   val build = taskKey[Unit]("Builds the app")
+  val isProd = settingKey[Boolean]("true if prod, false otherwise")
 }
 
 object RollupPlugin extends AutoPlugin {
