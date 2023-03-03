@@ -1,24 +1,24 @@
 * {
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 
-    font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 :root {
-    --app-color: magenta;
+  --app-color: magenta;
 }
 
 .app {
-    background: url("../img/beauty.png");
+  background: url("../img/beauty.png");
 }
 
 ::placeholder {
-    color: var(--app-color);
+  color: var(--app-color);
 }
 
 .what {
-    transition: all .5s;
-    user-select: none;
+  transition: all .5s;
+  user-select: none;
 }
