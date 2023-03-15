@@ -6,6 +6,8 @@ import {scalajs, production, outputDir} from "./target/scalajs.rollup.config.js"
 import path from "path"
 import extractcss from "./rollup-extract-css"
 import type {RollupOptions} from "rollup"
+import sourcemaps from "./rollup-sourcemaps";
+import * as http from "http";
 
 const resourcesDir = "src/main/resources"
 const urlOptions = [
@@ -33,10 +35,22 @@ const css = () => extractcss({
   urlOptions: urlOptions
 })
 
+// With a path of "../src/https:/www.google.com", prefix of "https:/" and replacement of "https://",
+// returns "https://www.google.com"
+const sourcemapFix = (path: string, prefix: string, replacement: string): string => {
+  const idx = path.indexOf(prefix)
+  if (idx > 0) {
+    const address = path.substring(idx + prefix.length)
+    return `${replacement}${address}`
+  }
+  return path
+}
+
 const config: RollupOptions[] = [
   {
     input: scalajs.input,
     plugins: [
+      sourcemaps({}),
       css(),
       resolve(), // tells Rollup how to find date-fns in node_modules
       commonjs(), // converts date-fns to ES modules
@@ -46,7 +60,13 @@ const config: RollupOptions[] = [
       dir: outputDir,
       format: "iife",
       name: "version",
-      entryFileNames: entryNames
+      entryFileNames: entryNames,
+      sourcemap: true,
+      sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+        // relativeSourcePath is unreliable; this replaces bogus paths with absolute paths
+        const httpsFixed = sourcemapFix(relativeSourcePath, "https:/", "https://")
+        return sourcemapFix(httpsFixed, "file:/", "file:///")
+      }
     }
   },
   {

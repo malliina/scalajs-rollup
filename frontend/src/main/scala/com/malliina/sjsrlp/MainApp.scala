@@ -10,6 +10,7 @@ object MainApp:
     val formatted = dateFns.format(new Date(), "h:mm:ss")
     dom.document.getElementById("time-now").textContent = formatted
     println(s"Hello, world! The time is now $formatted")
+    throw Exception("Hey")
 
 @js.native
 @JSImport("date-fns", JSImport.Default)

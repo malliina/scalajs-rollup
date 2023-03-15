@@ -12,10 +12,10 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
+          cache: 'sbt'
       - name: Run tests
         run: sbt +test
-      - uses: actions/checkout@master
       - name: Deploy site
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
